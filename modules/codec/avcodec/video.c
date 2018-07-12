@@ -350,7 +350,7 @@ int InitVideoDec( decoder_t *p_dec, AVCodecContext *p_context,
             p_sys->p_context->thread_type &= ~FF_THREAD_FRAME;
 # endif
     }
-
+	
     /* Workaround: frame multithreading is not compatible with
      * DXVA2. When a frame is being copied to host memory, the frame
      * is locked and cannot be used as a reference frame
@@ -364,6 +364,12 @@ int InitVideoDec( decoder_t *p_dec, AVCodecContext *p_context,
         p_sys->p_context->thread_type &= ~FF_THREAD_FRAME;
     }
     free( avcodec_hw );
+
+	if (i_codec_id == AV_CODEC_ID_VP8)
+	{
+		msg_Warn(p_dec, "threaded frame decoding is not compatible with VP8, disabled");
+		p_sys->p_context->thread_type &= ~FF_THREAD_FRAME;
+	}
 # endif
 
     if( p_sys->p_context->thread_type & FF_THREAD_FRAME )
